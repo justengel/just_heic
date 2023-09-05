@@ -1,7 +1,7 @@
 import argparse
 import glob
 import os
-from PIL import Image
+from PIL import Image, ImageOps, ExifTags
 import pillow_heif
 from typing import List, Tuple
 
@@ -56,7 +56,8 @@ def get_files(
 
     # Collect source files
     if os.path.isfile(src):
-        iter_files = [src]
+        iter_files = glob.iglob(os.path.basename(src), root_dir=os.path.dirname(src))
+        src = os.path.dirname(src)
     else:
         if recursive:
             iter_files = glob.iglob("**/*.heic", root_dir=src, recursive=True)
@@ -83,9 +84,16 @@ def make_output_filename(filename: str, output: str = None) -> str:
     return os.path.normpath(output)
 
 
-def get_metadata(filename: str) -> dict:
+EXIF_REVERSED = {v: k for k, v in ExifTags.TAGS.items()}
+ORIENTATION = EXIF_REVERSED['Orientation']
+
+
+def get_metadata(filename: str, data: bytes = None) -> Image.Exif:
     debug("Reading metadata", filename)
-    if os.path.splitext(filename)[-1].lower() == ".heic":
+    if isinstance(data, bytes):
+        exif_dict = Image.Exif()
+        exif_dict.load(data)
+    elif os.path.splitext(filename)[-1].lower() == ".heic":
         img = pillow_heif.read_heif(filename)
         dictionary = img.info
         exif_dict = Image.Exif()
@@ -96,7 +104,7 @@ def get_metadata(filename: str) -> dict:
     return exif_dict
 
 
-def convert_file(filename: str, output: str = None) -> str:
+def convert_file(filename: str, output: str = None, fix_rotation: bool = True) -> str:
     global VERBOSE
 
     if os.path.splitext(filename)[-1].lower() != ".heic":
@@ -126,6 +134,15 @@ def convert_file(filename: str, output: str = None) -> str:
     modified = os.path.getmtime(filename)
 
     debug("Saving", output)
+    if fix_rotation:
+        # Fix image orientation
+        image = ImageOps.exif_transpose(image)
+
+        # Fix exif data orientation
+        exif = get_metadata(filename, data=exif_dict)
+        exif[ORIENTATION] = 1
+        exif_dict = exif.tobytes()
+
     image.save(output, "JPEG", exif=exif_dict)
     set_cm_time(output, created, modified)
     debug("Saved", output)
@@ -133,7 +150,7 @@ def convert_file(filename: str, output: str = None) -> str:
     return output
 
 
-def main(src: str, dest: str = None, recursive: bool = False) -> List[str]:
+def main(src: str, dest: str = None, recursive: bool = False, fix_rotation: bool = True) -> List[str]:
     if not os.path.exists(src):
         raise ValueError("The given source does not exist!")
 
@@ -143,7 +160,7 @@ def main(src: str, dest: str = None, recursive: bool = False) -> List[str]:
     # Convert files
     output_files = []
     for filename, output in files:
-        output_files.append(convert_file(filename, output))
+        output_files.append(convert_file(filename, output, fix_rotation))
 
     return output_files
 
@@ -161,6 +178,7 @@ def cli():
     P.add_argument(
         "-r", "--recursive", action="store_true", help="Recurse through subdirectories."
     )
+    P.add_argument("-n", "--no-rotation", action="store_true", help="If set do not fix the exif rotation.")
     P.add_argument(
         "-v", "--verbose", action="count", default=0, help="Print debug messages."
     )
@@ -169,9 +187,10 @@ def cli():
     SRC = ARGS.src
     DEST = ARGS.dest
     RECURSE = ARGS.recursive
+    NO_ROTATION = ARGS.no_rotation
     VERBOSE = ARGS.verbose  # Set global
 
-    main(SRC, DEST, RECURSE)
+    main(SRC, DEST, RECURSE, fix_rotation=not NO_ROTATION)
 
 
 if __name__ == "__main__":

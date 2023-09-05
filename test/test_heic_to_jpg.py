@@ -10,6 +10,15 @@ def test_get_files():
     files = get_files("./src")
     assert files == [(norm("src/file.heic"), norm("src/file.jpg"))]
 
+    files = get_files("./src/file.heic")
+    assert files == [(norm("src/file.heic"), norm("src/file.jpg"))]
+
+    files = get_files("./src/file.heic", "dest/file.jpg")
+    assert files == [(norm("src/file.heic"), norm("dest/file.jpg"))]
+
+    files = get_files("./src/file.heic", "dest")
+    assert files == [(norm("src/file.heic"), norm("dest/file.jpg"))]
+
     files = get_files("./src/sub")
     assert files == [(norm("src/sub/file2.heic"), norm("src/sub/file2.jpg"))]
 
