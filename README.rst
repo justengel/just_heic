@@ -1,5 +1,5 @@
 ===========
-heic_to_jpg
+just_heic_to_jpg
 ===========
 
 Convert heic files to jpg files.
@@ -7,5 +7,14 @@ Convert heic files to jpg files.
 
 .. code-block:: python
 
-    heic_to_jpg file.heic file.jpg
-    heic_to_jpg src_folder dest_folder --recursive
+    just_heic_to_jpg file.heic file.jpg
+    just_heic_to_jpg src_folder dest_folder --recursive
+    just_heic_to_jpg --help
+
+
+Install
+=======
+
+.. code-block::
+
+    pip install just_heic_to_jpg

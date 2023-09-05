@@ -20,10 +20,10 @@ def read(fname):
 
 if __name__ == "__main__":
     # Variables
-    name = "heic_to_jpg"
+    name = "just_heic_to_jpg"
     version = "0.0.0"
     description = "Convert heic files to jpg and keep metadata"
-    url = "https://github.com/justengel/heic_to_jpg"
+    url = f"https://github.com/justengel/{name}"
     author = "Justin Engel"
     author_email = "jtengel08@gmail.com"
     keywords = 'heic jpg'
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
           entry_points={
               'console_scripts': [
-                  'heic_to_jpg=heic_to_jpg:cli',
+                  'just_heic_to_jpg=just_heic_to_jpg:cli',
                   ],
               # 'gui_scripts': [
               #     'baz = my_package_gui:start_func',
