@@ -23,7 +23,7 @@ if __name__ == "__main__":
     name = "heic_to_jpg"
     version = "0.0.0"
     description = "Convert heic files to jpg and keep metadata"
-    url = "github.com/justengel/heic_to_jpg"
+    url = "https://github.com/justengel/heic_to_jpg"
     author = "Justin Engel"
     author_email = "jtengel08@gmail.com"
     keywords = 'heic jpg'
@@ -44,8 +44,7 @@ if __name__ == "__main__":
           long_description=read('README.rst'),
           keywords=keywords,
           url=url,
-          download_url='{url}/archive/v{version}.tar.gz'.format(url=url, version=version),
-
+          download_url='{url}/archive/refs/tags/v{version}.tar.gz'.format(url=url, version=version),
           author=author,
           author_email=author_email,
 
