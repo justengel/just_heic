@@ -149,12 +149,14 @@ def main(src: str, dest: str = None, recursive: bool = False) -> List[str]:
 
 
 def cli():
+    global VERBOSE
+
     P = argparse.ArgumentParser("Convert heic files to jpg files.")
     P.add_argument(
-        "-s", "--src", default=".", type=str, help="Source file or directory."
+        "src", default=".", type=str, help="Source file or directory."
     )
     P.add_argument(
-        "-o", "--dest", type=str, default=None, help="Destination file or directory."
+        "dest", type=str, nargs="?", default=None, help="Destination file or directory."
     )
     P.add_argument(
         "-r", "--recursive", action="store_true", help="Recurse through subdirectories."
