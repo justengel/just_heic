@@ -1,6 +1,6 @@
-===========
+================
 just_heic_to_jpg
-===========
+================
 
 Convert heic files to jpg files.
 
