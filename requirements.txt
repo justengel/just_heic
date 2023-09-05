@@ -1,0 +1,3 @@
+Pillow>=10.0.0
+pillow_heif>=0.13.0
+win32-setctime>=1.1.0
